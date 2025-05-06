@@ -31,5 +31,18 @@ int main() {
     std::cout << "\nBook Summary:\n";
     bookTest.printSummary();
 
+	//Testing library
+    Library& library = Library::getInstance();
+
+    //Add users
+	library.addUser("Bob", "22222", "password");
+	library.addUser("Alice", "33333", "password");
+
+	//Authenticate users
+	library.authUser("22222", "password");
+
+    //Save Data
+	library.saveAll();
+
     return 0;
 }
