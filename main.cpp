@@ -31,17 +31,25 @@ int main() {
     std::cout << "\nBook Summary:\n";
     bookTest.printSummary();
 
-	//Testing library
+    //Test searchItems
+    std::cout << "Testing searchItems:\n";
+    SearchFunction::searchItems(inventory, "Harry");
+
+    //Test findUser
+    std::cout << "\nTesting findUser:\n";
+    SearchFunction::findUser(users, "Bob");
+
+	//Test library
     Library& library = Library::getInstance();
 
-    //Add users
+    //Test Add users
 	library.addUser("Bob", "22222", "password");
 	library.addUser("Alice", "33333", "password");
 
-	//Authenticate users
+	//Test Authenticate users
 	library.authUser("22222", "password");
 
-    //Save Data
+    //Test Save Data
 	library.saveAll();
 
     return 0;
