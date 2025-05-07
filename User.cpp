@@ -3,19 +3,19 @@
 #include <iostream>
 #include <algorithm>
 
-// Allows passing credentials to Person
+// Allows passing info to Person
 User::User(const std::string& name, const std::string& id, const std::string& password)
     : Person(name, id, password) {
 }
 
-// Borrow an item (up to 4 simultaneous borrows)
+// Borrow an item
 void User::borrowItem(const std::string& itemID) {
     if (borrowed.size() >= 4) {
-        std::cout << "Cannot borrow more than 4 items." << std::endl;
+        std::cout << "Cannot borrow more than 4 books." << std::endl;
         return;
     }
     Library& lib = Library::getInstance();
-    // Delegate borrow operation to Library (checks availability)
+    //borrow operation to Library checks for availibility 
     if (lib.borrowBook(id, itemID)) {
         borrowed.push_back(itemID);
         history.push_back("Borrowed: " + itemID);
@@ -29,7 +29,7 @@ void User::borrowItem(const std::string& itemID) {
 // Return an item previously borrowed
 void User::returnItem(const std::string& itemID) {
     Library& lib = Library::getInstance();
-    // Delegate return to Library
+    //return to Library
     if (lib.returnBook(id, itemID)) {
         auto it = std::find(borrowed.begin(), borrowed.end(), itemID);
         if (it != borrowed.end()) borrowed.erase(it);
@@ -41,7 +41,7 @@ void User::returnItem(const std::string& itemID) {
     }
 }
 
-// Print user summary: current loans and history
+// Print user history
 void User::printSummary() const {
     std::cout << "User: " << name << " (" << id << ")" << std::endl;
     std::cout << "Currently Borrowed Items:" << std::endl;
