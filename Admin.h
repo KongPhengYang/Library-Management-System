@@ -1,94 +1,42 @@
-#include "Admin.h"
-#include "Library.h"
-#include "SearchFunction.h"
-#include <iostream>
+#ifndef ADMIN_H
+#define ADMIN_H
 
-// Allows admin to pass credentials to Person
-Admin::Admin(const std::string& name, const std::string& id, const std::string& password)
-    : Person(name, id, password) {
-}
+#include "Person.h"
+#include "Book.h"
+#include "User.h"
+#include <vector>
+#include <string>
 
-// Print admin summary/info
-void Admin::printSummary() const {
-    std::cout << "Admin: " << name << " (" << id << ")\n";
-}
+// Inheritance because Admin inherits Person
+class Admin : public Person {
+public:
+    // Allows admin to pass credentials to Person
+    Admin(const std::string& name, const std::string& id, const std::string& password);
+    // Print admin summary/info
+    void printSummary() const override;
 
-// Add an inventory item (e.g., books, magazines)
-bool Admin::addInventoryItem(const Book& book) {
-    Library& lib = Library::getInstance();
-    // Delegate to Library to add book and persist
-    if (lib.addBook(book)) {
-        lib.saveAll();    // Save updated book list to book.txt
-        return true;
-    }
-    return false;
-}
+    // Add an inventory item
+    bool addInventoryItem(const Book& book);
+    // Delete an inventory item by ID
+    bool removeInventoryItem(const std::string& bookID);
 
-// Delete an inventory item by ID
-bool Admin::removeInventoryItem(const std::string& bookID) {
-    Library& lib = Library::getInstance();
-    if (lib.removeBook(bookID)) {
-        lib.saveAll();
-        return true;
-    }
-    return false;
-}
+    // Add a new user account
+    bool createUserAccount(const std::string& name, const std::string& id, const std::string& password);
+    // Delete a user account by ID
+    bool deleteUserAccount(const std::string& userID);
 
-// Add a new user account
-bool Admin::createUserAccount(const std::string& name, const std::string& id, const std::string& password) {
-    Library& lib = Library::getInstance();
-    if (lib.addUser(name, id, password)) {
-        lib.saveAll();    // Save updated users to users file
-        return true;
-    }
-    return false;
-}
+    // Edit an existing inventory item
+    bool editInventoryItem(const std::string& bookID, const Book& updatedBook);
+    // Edit an existing user details
+    bool editUserDetails(const std::string& userID, const User& updatedUser);
 
-// Delete a user account by ID
-bool Admin::deleteUserAccount(const std::string& userID) {
-    Library& lib = Library::getInstance();
-    if (lib.removeUser(userID)) {
-        lib.saveAll();
-        return true;
-    }
-    return false;
-}
+    // View total number of currently active users in the system
+    size_t viewActiveUserCount() const;
 
-// Edit an existing inventory item
-bool Admin::editInventoryItem(const std::string& bookID, const Book& updatedBook) {
-    Library& lib = Library::getInstance();
-    if (lib.editBook(bookID, updatedBook)) {
-        lib.saveAll();
-        return true;
-    }
-    return false;
-}
+    // Search for inventory items by keyword/title/author/publisher
+    std::vector<Book> searchInventory(const std::string& keyword) const;
+    // Search for users by keyword/name/ID
+    std::vector<User> searchUsers(const std::string& keyword) const;
+};
 
-// Edit an existing user details
-bool Admin::editUserDetails(const std::string& userID, const User& updatedUser) {
-    Library& lib = Library::getInstance();
-    if (lib.editUser(userID, updatedUser)) {
-        lib.saveAll();
-        return true;
-    }
-    return false;
-}
-
-// View total number of currently active users in the system
-size_t Admin::viewActiveUserCount() const {
-    return Library::getInstance().getActiveUserCount();
-}
-
-// Search for inventory items by keyword/title/author/publisher
-std::vector<Book> Admin::searchInventory(const std::string& keyword) const {
-    auto books = Library::getInstance().getAllBooks();
-    SearchFunction::searchItems(books, keyword);
-    return books;
-}
-
-// Search for users by keyword/name/ID
-std::vector<User> Admin::searchUsers(const std::string& keyword) const {
-    auto users = Library::getInstance().getAllUsers();
-    SearchFunction::searchUsers(users, keyword);
-    return users;
-}
+#endif
