@@ -24,6 +24,9 @@ public:
     std::string getAuthor() const;
     int getCopies() const;
 
+    //Setter
+    void setCopies(int newCopies);
+
     //Print the book info/summary
     void printSummary() const;
 };
