@@ -5,25 +5,27 @@
 #include <list>
 #include <string>
 
-//Person who is also a user that can borrow and return items
-class User : public Person { //Another inheritance
-private:
-    //Encapsulation containers
-    std::list<std::string> borrowed; //IDs of the borrowed items
-    std::list<std::string> history;  //History logs of the borrow/return actions
+// User class for library users
+class User : public Person {
 public:
-    User() = default;
+    // Allows passing credentials to Person
     User(const std::string& name, const std::string& id, const std::string& password);
-    //Borrow an item up to 4 at once
+
+    // Borrow an item 
     void borrowItem(const std::string& itemID);
-    //Return an item that was previously borrowed
+    // Return an item previously borrowed
     void returnItem(const std::string& itemID);
 
-    //Getters
+    // Print user summary: current loans and history
+    void printSummary() const override;
+
+    // Getters
     const std::list<std::string>& getBorrowed() const;
     const std::list<std::string>& getHistory() const;
-    //Print user details/history
-    void printSummary() const override;
+
+private:
+    std::list<std::string> borrowed; // List of currently borrowed item IDs
+    std::list<std::string> history; // Full borrow/return history records
 };
 
-#endif // USER_H
+#endif
