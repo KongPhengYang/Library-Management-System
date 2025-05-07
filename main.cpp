@@ -1,56 +1,132 @@
-#include <iostream>
+#include <iostream.h>
+
+#include "admin_tasks.h"
+#include "search.h"
 #include "Library.h"
-#include "Admin.h"
 #include "User.h"
-#include "Book.h"
+
+Library *library
+
+void registerNewUsers() {
+	std::string name, id, passwd
+	std::string done("DONE");
+	
+	while (1) {
+		std::cout << "Please enter the new name, id, and password of the user.\n\
+		Or type 'DONE' to finish.\n";
+		
+		std::cout << "User name or 'DONE':\n";
+		std::getline(std::cin, name);
+		if (buf.compare("DONE") == 0) {
+			return;
+		}
+		
+		std::cout << "User ID:\n";
+		std::getline(std::cin, id);
+		
+		std::cout << "User Password:\n";
+		std::getline(std::cin, passwd);
+		
+		if (!(library->addUser(name, id, passwd))) {
+			std::cout << "Please try again with another user.\n";
+		}
+	}
+}
+
+User *loginUser() {
+	std::string id, passwd;
+	User *user;
+	
+	std::cout << "Enter User ID.\n";
+	std::getline(std::cin, id);
+	std::cout << "Enter User password.\n";
+	std::getline(std::cin, passwd);
+	
+	// TODO fixme
+	for (const auto& user : users) {
+		if (user.getId() == id)  {
+			if (library->authUser(id, passwd)) {
+				return &user;
+			} else {
+				return NULL;
+			}
+		} else {
+			std::cout << "Cannot find user.\n";
+		}
+		
+	}
+	
+}
+
+void userTasks(User *user) {
+	char c = 0;
+	std::cout << "Select user operation.\n";
+	
+	while (c != '9') {
+		std::cout << "1. Print user info.\n";
+		std::cout << "2. Search.\n";
+		std::cout << "9. Quit.\n"
+		
+		std::cin >> c;
+		
+		switch (c) {
+			case '1':
+				user->printSummary();
+				break;
+			case '2':
+				search();
+				break;
+			case '9':
+				std::cout << "Logging out user.\n";
+				break;
+			default:
+				std::cout << "Unknown option. Please try again.\n";
+		}
+	}
+}
 
 int main() {
-    //Testing making admin
-    Admin adminTest("John", "11111", "password");
-    std::cout << "Admin Summary:\n";
-    adminTest.printSummary();
-    std::cout << std::endl;
-
-    //Testing making user and the borrow/return
-    User userTest("Bob", "22222", "password");
-    std::cout << "Initial User Summary:\n";
-    userTest.printSummary();
-
-    std::cout << "Borrowing 'Harry Potter'\n";
-    userTest.borrowItem("HArry Potter");
-    std::cout << "After Borrow Summary:\n";
-    userTest.printSummary();
-
-    std::cout << "Returning 'Harry Potter'...\n";
-    userTest.returnItem("Hary Potter");
-    std::cout << "After Return Summary:\n";
-    userTest.printSummary();
-
-    //Testing book
-    Book bookTest("B123", "Harry Potter", "JK ROWLING", 5);
-    std::cout << "\nBook Summary:\n";
-    bookTest.printSummary();
-
-    //Test searchItems
-    std::cout << "Testing searchItems:\n";
-    SearchFunction::searchItems(inventory, "Harry");
-
-    //Test findUser
-    std::cout << "\nTesting findUser:\n";
-    SearchFunction::findUser(users, "Bob");
-
-	//Test library
-    Library& library = Library::getInstance();
-
-    //Test Add users
-	library.addUser("Bob", "22222", "password");
-	library.addUser("Alice", "33333", "password");
-
-	//Test Authenticate users
-	library.authUser("22222", "password");
-
-    //Test Save Data
-	library.saveAll();
-
-    return 0;
+	// init library
+	library = Library.getInstance();
+	
+	// load books, users, and admins
+	// ???
+	
+	char c = 0;
+	std::cout << "Welcome to the library system. Please select an option\n";
+	
+	while (c != '4') {
+		std::cout << "1. Register New Users\n";
+		std::cout << "2. Admin (Librarian) Login\n";
+		std::cout << "3. User Login\n";
+		std::cout << "4. Exit"
+		
+		std::cin >> c;
+		
+		switch (c) {
+			case '1':
+				registerNewUsers();
+				break;
+			case '2':
+				if (loginAdmin())
+					adminTasks();
+				break;
+			case '3':
+				Use *user = loginUser();
+				if (user) {
+					userTasks(user);
+				}
+				break;
+			case '4':
+				std::cout << "Session finished.\n";
+				std::cout << "All data is now being saved then the program will terminate.\n";
+				library.saveAll();
+				break;
+			default: 
+				std::cout << "Invalid option. Please review the current options.\n";
+		}
+		
+	}
+	
+	return 0;
 }
