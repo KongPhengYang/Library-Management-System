@@ -1,38 +1,63 @@
-#include <iostream>
 #include "User.h"
+#include "Library.h"
+#include <iostream>
+#include <algorithm>
 
-//User info
+// Allows passing credentials to Person
 User::User(const std::string& name, const std::string& id, const std::string& password)
     : Person(name, id, password) {
 }
 
-//Record a borrow action if under the limit of 4 items
+// Borrow an item (up to 4 simultaneous borrows)
 void User::borrowItem(const std::string& itemID) {
-    if (borrowed.size() < 4) {
+    if (borrowed.size() >= 4) {
+        std::cout << "Cannot borrow more than 4 items." << std::endl;
+        return;
+    }
+    Library& lib = Library::getInstance();
+    // Delegate borrow operation to Library (checks availability)
+    if (lib.borrowBook(id, itemID)) {
         borrowed.push_back(itemID);
-        history.push_back("B:" + itemID);  //B for borrow
+        history.push_back("Borrowed: " + itemID);
+        lib.saveAll();  // Persist updates
+    }
+    else {
+        std::cout << "Unable to borrow item: " << itemID << std::endl;
     }
 }
 
-//Record a return action and remove from the borrowed list
+// Return an item previously borrowed
 void User::returnItem(const std::string& itemID) {
-    for (auto it = borrowed.begin(); it != borrowed.end(); ++it) {
-        if (*it == itemID) {
-            borrowed.erase(it);
-            history.push_back("R:" + itemID);  //R for return
-            break;
-        }
+    Library& lib = Library::getInstance();
+    // Delegate return to Library
+    if (lib.returnBook(id, itemID)) {
+        auto it = std::find(borrowed.begin(), borrowed.end(), itemID);
+        if (it != borrowed.end()) borrowed.erase(it);
+        history.push_back("Returned: " + itemID);
+        lib.saveAll();
+    }
+    else {
+        std::cout << "Return failed for item: " << itemID << std::endl;
     }
 }
 
-const std::list<std::string>& User::getBorrowed() const { return borrowed; }
-const std::list<std::string>& User::getHistory() const { return history; }
-
-//Print user name, ID, and lists of the borrows and returns
+// Print user summary: current loans and history
 void User::printSummary() const {
-    std::cout << "User: " << name << " (" << id << ")\n";
-    std::cout << " Currently borrowed:\n";
-    for (const auto& b : borrowed) std::cout << "  - " << b << "\n";
-    std::cout << " History:\n";
-    for (const auto& h : history) std::cout << "  - " << h << "\n";
+    std::cout << "User: " << name << " (" << id << ")" << std::endl;
+    std::cout << "Currently Borrowed Items:" << std::endl;
+    for (const auto& item : borrowed) {
+        std::cout << " - " << item << std::endl;
+    }
+    std::cout << "Borrow/Return History:" << std::endl;
+    for (const auto& record : history) {
+        std::cout << " * " << record << std::endl;
+    }
+}
+
+// Getters
+const std::list<std::string>& User::getBorrowed() const {
+    return borrowed;
+}
+const std::list<std::string>& User::getHistory() const {
+    return history;
 }
