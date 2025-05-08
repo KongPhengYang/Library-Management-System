@@ -81,11 +81,13 @@ int main() {
 	char c = 0;
 	std::cout << "Welcome to the library system. Please select an option\n";
 	
+	Library& lib = Library::getInstance();
+	
 	while (c != '4') {
 		std::cout << "1. Register New Users\n";
 		std::cout << "2. Admin (Librarian) Login\n";
 		std::cout << "3. User Login\n";
-		std::cout << "4. Exit"
+		std::cout << "4. Exit";
 		
 		std::cin >> c;
 		
