@@ -190,24 +190,23 @@ void borrowAndReturn(Admin*) {
 void adminTasks(Admin* a) {
     std::cout << "Welcome to Administrator panel. Please select an option.\n";
     char c = 0;
-
     while (c != '9') {
         std::cout << "1. Manage Inventory.\n"
             << "2. Manage User Accounts.\n"
             << "3. Get Library statistics.\n"
             << "4. Borrow and return books.\n"
             << "5. Search inventory and users.\n"
+            << "6. Print admin info.\n" 
             << "9. Logout.\n";
-
         std::cin >> c;
-        std::cin.ignore(); 
-
+        std::cin.ignore();
         switch (c) {
         case '1': manageInventory(a);     break;
         case '2': manageUsers(a);         break;
         case '3': printStats();           break;
         case '4': borrowAndReturn(a);     break;
         case '5': adminSearch(a);         break;
+        case '6': a->printSummary();      break; 
         case '9': std::cout << "Now logging out Admin.\n"; break;
         default:  std::cout << "Unknown option. Try again.\n"; break;
         }
