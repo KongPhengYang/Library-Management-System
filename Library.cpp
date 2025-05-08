@@ -9,6 +9,12 @@ Library& Library::getInstance() {
         //Admin(name, id, password)
         instance.admins.emplace_back("ADMIN", "A1", "pass");
     }
+    if (instance.books.empty()) {
+        //Book(ID, Title, Author, # of copies)
+        instance.books.emplace_back("B001", "The Hobbit", "J.R.R. Tolkien", 3);
+        instance.books.emplace_back("B002", "1984", "George Orwell", 5);
+        instance.books.emplace_back("B003", "To Kill a Mockingbird", "Harper Lee", 4);
+    }
     return instance;
 }
 
