@@ -1,117 +1,94 @@
-#include <iostream>
-#include <string>
-#include "admin_tasks.h"
-#include "search.h"
-#include "Library.h"
-#include "User.h"
 #include "Admin.h"
+#include "Library.h"
+#include "SearchFunction.h"
+#include <iostream>
 
-void registerNewUsers() {
-    std::string name, id, passwd;
-    const std::string done("DONE");
-
-    while (true) {
-        std::cout << "Please enter the new name, id, and password of the user.\n"
-            << "Or type 'DONE' to finish.\n";
-
-        std::cout << "User name or 'DONE':\n";
-        std::getline(std::cin, name);
-        if (name == done) {
-            return;
-        }
-
-        std::cout << "User ID:\n";
-        std::getline(std::cin, id);
-
-        std::cout << "User Password:\n";
-        std::getline(std::cin, passwd);
-
-        Library& lib = Library::getInstance();
-        if (!lib.addUser(name, id, passwd)) {
-            std::cout << "Please try again with another user.\n";
-        }
-    }
+// Allows admin to pass credentials to Person
+Admin::Admin(const std::string& name, const std::string& id, const std::string& password)
+    : Person(name, id, password) {
 }
 
-User* loginUser() {
-    std::string id, passwd, name;
-
-    std::cout << "Enter User ID.\n";
-    std::getline(std::cin, id);
-
-    std::cout << "Enter User Name.\n";
-    std::getline(std::cin, name);
-
-    std::cout << "Enter User password.\n";
-    std::getline(std::cin, passwd);
-
-    return new User(name, id, passwd);
+// Print admin summary/info
+void Admin::printSummary() const {
+    std::cout << "Admin: " << name << " (" << id << ")\n";
 }
 
-void userTasks(User* user) {
-    char c = 0;
-    std::cout << "Select user operation.\n";
-
-    while (c != '9') {
-        std::cout << "1. Print user info.\n"
-            << "2. Search.\n"
-            << "9. Quit.\n";
-
-        std::cin >> c;
-        std::cin.ignore();
-
-        switch (c) {
-        case '1':
-            user->printSummary();
-            break;
-        case '2':
-            search();
-            break;
-        case '9':
-            std::cout << "Logging out user.\n";
-            break;
-        default:
-            std::cout << "Unknown option. Please try again.\n";
-        }
+// Add an inventory item (e.g., books, magazines)
+bool Admin::addInventoryItem(const Book& book) {
+    Library& lib = Library::getInstance();
+    // Delegate to Library to add book and persist
+    if (lib.addBook(book)) {
+        lib.saveAll();    // Save updated book list to book.txt
+        return true;
     }
+    return false;
 }
 
-int main() {
-    char c = 0;
-    std::cout << "Welcome to the library system. Please select an option\n";
-
-    while (c != '4') {
-        std::cout << "1. Register New Users\n"
-            << "2. Admin (Librarian) Login\n"
-            << "3. User Login\n"
-            << "4. Exit\n";
-
-        std::cin >> c;
-        std::cin.ignore();
-
-        switch (c) {
-        case '1':
-            registerNewUsers();
-            break;
-        case '2': {
-            Admin* admin = loginAdmin();
-            if (admin) adminTasks(admin);
-            break;
-        }
-        case '3': {
-            User* user = loginUser();
-            if (user) userTasks(user);
-            break;
-        }
-        case '4':
-            std::cout << "Session finished.\n"
-                << "All data is now being saved then the program will terminate.\n";
-            Library::getInstance().saveAll();
-            break;
-        default:
-            std::cout << "Invalid option. Please review the current options.\n";
-        }
+// Delete an inventory item by ID
+bool Admin::removeInventoryItem(const std::string& bookID) {
+    Library& lib = Library::getInstance();
+    if (lib.removeBook(bookID)) {
+        lib.saveAll();
+        return true;
     }
+    return false;
+}
 
-    return 0;
+// Add a new user account
+bool Admin::createUserAccount(const std::string& name, const std::string& id, const std::string& password) {
+    Library& lib = Library::getInstance();
+    if (lib.addUser(name, id, password)) {
+        lib.saveAll();    // Save updated users to users file
+        return true;
+    }
+    return false;
+}
+
+// Delete a user account by ID
+bool Admin::deleteUserAccount(const std::string& userID) {
+    Library& lib = Library::getInstance();
+    if (lib.removeUser(userID)) {
+        lib.saveAll();
+        return true;
+    }
+    return false;
+}
+
+// Edit an existing inventory item
+bool Admin::editInventoryItem(const std::string& bookID, const Book& updatedBook) {
+    Library& lib = Library::getInstance();
+    if (lib.editBook(bookID, updatedBook)) {
+        lib.saveAll();
+        return true;
+    }
+    return false;
+}
+
+// Edit an existing user details
+bool Admin::editUserDetails(const std::string& userID, const User& updatedUser) {
+    Library& lib = Library::getInstance();
+    if (lib.editUser(userID, updatedUser)) {
+        lib.saveAll();
+        return true;
+    }
+    return false;
+}
+
+// View total number of currently active users in the system
+size_t Admin::viewActiveUserCount() const {
+    return Library::getInstance().getActiveUserCount();
+}
+
+// Search for inventory items by keyword/title/author/publisher
+std::vector<Book> Admin::searchInventory(const std::string& keyword) const {
+    auto books = Library::getInstance().getAllBooks();
+    SearchFunction::searchItems(books, keyword);
+    return books;
+}
+
+// Search for users by keyword/name/ID
+std::vector<User> Admin::searchUsers(const std::string& keyword) const {
+    auto users = Library::getInstance().getAllUsers();
+    SearchFunction::searchUsers(users, keyword);
+    return users;
 }
