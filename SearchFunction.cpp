@@ -25,7 +25,7 @@ void SearchFunction::searchItems(const std::vector<Book>& inventory, const std::
 }
 
 // Find a user by name or ID
-void SearchFunction::findUser(const std::vector<User>& users, const std::string& keyword) {
+void SearchFunction::searchUsers(const std::vector<User>& users, const std::string& keyword) {
     std::cout << "User Search Results for \"" << keyword << "\":\n";
     std::cout << "-----------------------------------\n";
 
