@@ -55,6 +55,8 @@ void userTasks(User* user) {
     while (c != '9') {
         std::cout << "1. Print user info.\n"
             << "2. Search.\n"
+            << "3. Borrow book.\n"
+            << "4. Return book.\n"
             << "9. Quit.\n";
 
         std::cin >> c;
@@ -67,11 +69,24 @@ void userTasks(User* user) {
         case '2':
             search();
             break;
+        case '3': {
+            std::string bid;
+            std::cout << "Enter book ID to borrow: ";
+            std::getline(std::cin, bid);
+            user->borrowItem(bid);
+        } break;
+        case '4': {
+            std::string bid;
+            std::cout << "Enter book ID to return: ";
+            std::getline(std::cin, bid);
+            user->returnItem(bid);
+        } break;
         case '9':
             std::cout << "Logging out user.\n";
             break;
         default:
             std::cout << "Unknown option. Please try again.\n";
+            break;
         }
     }
 }
