@@ -13,10 +13,10 @@ void Admin::printSummary() const {
     std::cout << "Admin: " << name << " (" << id << ")\n";
 }
 
-// Add an inventory item (e.g., books, magazines)
+// Add an inventory item (books)
 bool Admin::addInventoryItem(const Book& book) {
     Library& lib = Library::getInstance();
-    // Delegate to Library to add book and persist
+    // Call to Library to add book
     if (lib.addBook(book)) {
         lib.saveAll();    // Save updated book list to book.txt
         return true;
