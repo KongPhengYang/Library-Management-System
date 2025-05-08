@@ -2,51 +2,70 @@
 
 #include "admin_tasks.h"
 #include "search.h"
+#include "Admin.h"
+#include "Library.h"
+#include "User.h"
 
-bool loginAdmin() {
-	std::string id, passwd;
+Admin *loginAdmin() {
+	std::string id, name passwd;
 	
 	std::cout << "Enter Admin ID.\n";
 	std::getline(std::cin, id);
+	
+	std::cout << "Enter Admin Name.\n";
+	std::getline(std::cin, name);
+	
 	std::cout << "Enter Admin password.\n";
-	std::getlie(std::cin, passwd);
-	return library.authAdmin();
+	std::getline(std::cin, passwd);
+	
+	if (library.authAdmin(id, password))
+		return new Admin(id, name, passwd);
+	else
+		return NULL;
 }
 
-void manageInventory() {
-	std::cout << "Add or remove books or set number of copies.\n";
+
+Book *newBook() {
+	std::string id, title, author;
+	int copies = -1;
+	
+	std::cout << "ID:\n"
+	std::getline(std::cin, id);
+	
+	std::cout << "Title:\n"
+	std::getline(std::cin, name);
+	
+	std::cout << "Author :\n"
+	std::getline(std::cin, author);
+	
+	while (copies < 0) {
+		std::cout << "Copies:\n"
+		std::cin >> copies
+	}
+
+	Book newBook = new Book(id, title, author, copies);
+	return newBook;
+}
+
+void manageInventory(Admin *a) {
+	std::cout << "Add or remove books or edit book.\n";
 	char c = 0;
 
 	while (c != '9') {
 		std::cout << "1. Add book.\n";
 		std::cout << "2. Remove book.\n";
-		std::cout << "3. Set number of copies.\n";
+		std::cout << "3. Edit book details.\n";
 		std::cout << "9, Quit.\n";
 		
 		std::cin >> c;
 		
 		switch (c) {
 			case '1': {
-				std::string id, title, author;
-				int copiesl
+				std::cout << "Enter new book info.\n";
+				Book *book = newBook();
 				
-				std::cout << "Enter book info.\n";
-				std::cout << "ID:\n"
-				std::getline(std::cin, id);
-				
-				std::cout << "Title:\n"
-				std::getline(std::cin, name);
-				
-				std::cout << "Author :\n"
-				std::getline(std::cin, author);
-				
-				std::cout << "Copies:\n"
-				std::cin >> copies
-				
-				Book newBook = new Book(id, title, author, copies);
-				
-				//TODO: Add to inventory
-				std::cout << "Added book.\n";
+				//1
+				a->addInventoryItem(book);
 			}
 			break;
 			case '2': {
@@ -55,24 +74,23 @@ void manageInventory() {
 				std::cout << "Plese enter ID of book to remove.\n";
 				std::getline(std::cin, id);
 				
-				// TODO Find Book. Remove if found
-				std::cout << "Removed book.\n";
+				// T2
+				a->removeInventoryItem(id);
+				
 			}
 			break;
 			case '3': {
+				std::cout << "Enter id of book to edit.\n";
 				std::string id;
-				int copies = -1;
 				
-				std::cout << "Enter id of book to set number of copies.\n";
+				
 				std::getline(std::cin, id);
 				
-				while (copies < 0) {
-					std::cout << "Enter number of copies"
-					std::cin >> copies;
-				}
+				std::cout << "Now enter the new info about the book.\n";
+				Book *book = newBook();
 				
-				// TODO Find book and set number of copies
-				std::cout << "Updated number of copies.\n";
+				a->editInventoryItem(id, book);
+				
 			}
 			break;
 			
@@ -87,7 +105,7 @@ void manageInventory() {
 	}
 }
 
-void manageUsers() {
+void manageUsers(Admin *a) {
 	std::cout << "Delete User or edit info.\n";
 	char c = 0;
 	
@@ -104,34 +122,28 @@ void manageUsers() {
 				std::cout << "Enter ID of user to delete.\n";
 				std::cin >> id;
 				
-				// TODO DELETE USER
+				a->deleteUserAccount(id);
 			}
 			break;
 			case '2':  {
 				std::string id;
-				std::string buf;
-				char t;
+				std::string nid, nname, npasswd;
 				
-				std::cout << "Enter ID of user to modify.\n";
+				std::cout << "Enter id of user to edit.\n";
 				std::getline(std::cin, id);
-				std::cout << "1. Modify name.\n 2. Modify Password."
 				
-				std::cin >> t;
-				switch (t) {
-					case '1':
-						std::cout << "Enter new name of user.\n";
-						std::getline(std::cin, buf);
-						// TODO update user
-						
-						break;
-					case '2':
-						std::cout << "Enter new password for user.\n";
-						std::getline(std::cin, buf)l
-						
-						// TODO update user
-					default:
-						std::cout << "Invalid operation.\n";
-				}
+				std::cout << "Enter new user name.\n";
+				std::getline(std::cin, nname);
+				
+				std::cout << "Enter new user id.\n";
+				std::getline(std::cin, nid);
+				
+				std::cout << "Enter new user password.\n";
+				std::getline(std::cin, npasswd);
+				
+				User newUser = new User(name, id, password);
+				
+				a->editUserDetails(id, newUser);
 			}
 			break;
 			
@@ -144,17 +156,14 @@ void manageUsers() {
 		}
 }
 
-// TODO implement methhods
-
 void printStats() {
-	/*
-	std::cout << "Number of users: " << library.getUsers().size() << "\n";
-	std::cout << "Number of admins: " << library.getAdmins().size() << "\n";
-	std::cout << "Number of unique books: " << library.getBooks().size() << "\n";
-	*/
+	Library& lib = Library::getInstance();
+	
+	std::cout << "Number of users: " << library.getAllUsers().size() << "\n";
+	std::cout << "Number of books: " << library.getAllBooks().size() << "\n";
 }	
 
-void borrowAndReturn() {
+void borrowAndReturn(Admin *a) {
 	std::cout << "Borrow or return book for user";
 	char c = 0;
 	
@@ -175,10 +184,10 @@ void borrowAndReturn() {
 				std::cout << "Enter user id of borrower.\n";
 				std:getline(std::cin, user_id);
 				
-				// TODO find user
-				//
-				user->borrowitem(book_id);
-				std::cout << "Borrowed book.\n";
+				// !
+				Library& lib = Library::getInstance();
+				lib.borrowBook(user_id, book_id);
+				
 			}
 			break
 			
@@ -191,10 +200,8 @@ void borrowAndReturn() {
 				std::cout << "Enter user id of borrower.\n";
 				std:getline(std::cin, user_id);
 				
-				// TODO find user
-				//
-				user->returnItem(book_id);
-				std::cout << "Returned book.\n";
+				Library& lib = Library::getInstance();
+				lib.returnBook(user_id, book_id);
 			}
 			break;
 			
@@ -205,7 +212,7 @@ void borrowAndReturn() {
 }
 
 
-void adminTasks() {
+void adminTasks(Admin *a) {
 	std::cout << "Welcome to Administrator panel. Please select an option.\n"
 	char c = 0;
 	
@@ -221,19 +228,19 @@ void adminTasks() {
 		
 		switch (c) {
 			case '1':
-				manageInventory();
+				manageInventory(a);
 				break;
 			case '2':
-				manageUsers()
+				manageUsers(a)
 				break;
 			case '3':
 				printStats();
 				break;
 			case '4':
-				borrowAndReturn();
+				borrowAndReturn(Admin *a);
 				break;
 			case '5':
-				search();
+				adminSearch(a);
 				break;
 			case '9':
 				std::cout << "Now logging out Admin.\n";

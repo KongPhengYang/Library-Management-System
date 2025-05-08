@@ -2,8 +2,25 @@
 
 #include "search.h"
 #include "SearchFuncion.h"
+#include "Admin.h"
 
 void search() {
+	std::string keyword;
+	std::string done("DONE");
+				
+	
+	while (1) {
+		std::cout << "Enter keyword to search book for. Or type DONE to quit\n";
+		std::getline(std::cin, keyword);
+		
+		if (keyword == done)
+			break;
+		
+		SearchFunction.searchItems(keyword);
+	}
+}
+
+void adminSearch(Admin *a) {
 	char c = 0;
 	SearchFuncion s;
 	
@@ -23,8 +40,7 @@ void search() {
 				std::cout << "Enter keyword to search book for.\n";
 				std::getline(std::cin, keyword);
 				
-				// TODO fixme
-				s.searchItems(library->inventory, keyword);
+				a->searchInventory(keyword);
 			}
 			break;
 			
@@ -33,8 +49,7 @@ void search() {
 				std::cout << "Enter keyword to search user by.\n";
 				std::getline(std::cin, keyword);
 				
-				// TODO fixme
-				s.searchItems(library->users, keyword);
+				a->searchUsers(keyword);
 			}
 			
 			case '9':

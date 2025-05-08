@@ -4,8 +4,7 @@
 #include "search.h"
 #include "Library.h"
 #include "User.h"
-
-Library *library
+#include "Admin.h"
 
 void registerNewUsers() {
 	std::string name, id, passwd
@@ -27,6 +26,8 @@ void registerNewUsers() {
 		std::cout << "User Password:\n";
 		std::getline(std::cin, passwd);
 		
+		Library& lib = Library::getInstance();
+		
 		if (!(library->addUser(name, id, passwd))) {
 			std::cout << "Please try again with another user.\n";
 		}
@@ -34,28 +35,19 @@ void registerNewUsers() {
 }
 
 User *loginUser() {
-	std::string id, passwd;
+	std::string id, passwd, name;
 	User *user;
 	
 	std::cout << "Enter User ID.\n";
 	std::getline(std::cin, id);
+	
+	std::cout << "Enter User Name.\n";
+	std::getline(std::cin, name);
+	
 	std::cout << "Enter User password.\n";
 	std::getline(std::cin, passwd);
 	
-	// TODO fixme
-	for (const auto& user : users) {
-		if (user.getId() == id)  {
-			if (library->authUser(id, passwd)) {
-				return &user;
-			} else {
-				return NULL;
-			}
-		} else {
-			std::cout << "Cannot find user.\n";
-		}
-		
-	}
-	
+	return new User(name, id, password);
 }
 
 void userTasks(User *user) {
@@ -86,12 +78,6 @@ void userTasks(User *user) {
 }
 
 int main() {
-	// init library
-	library = Library.getInstance();
-	
-	// load books, users, and admins
-	// ???
-	
 	char c = 0;
 	std::cout << "Welcome to the library system. Please select an option\n";
 	
@@ -108,8 +94,9 @@ int main() {
 				registerNewUsers();
 				break;
 			case '2':
-				if (loginAdmin())
-					adminTasks();
+				Admin *admin = loginAdmin();
+				if (admin)
+					adminTasks(admin);
 				break;
 			case '3':
 				Use *user = loginUser();
