@@ -5,6 +5,10 @@
 // Singleton instance
 Library& Library::getInstance() {
     static Library instance;
+    if (instance.admins.empty()) {
+        //Admin(name, id, password)
+        instance.admins.emplace_back("ADMIN", "A1", "pass");
+    }
     return instance;
 }
 
